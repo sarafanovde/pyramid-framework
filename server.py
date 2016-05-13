@@ -46,7 +46,7 @@ class MyMiddleWare(object):
 	 			openBody = response.index(x)
  			if "</body>" in x.decode():
  				closeBody = response.index(x)
- 		 		result = response[:openBody] + [MIDDLEWARE_TOP.encode()] + response[openBody:closeBody+1] + [MIDDLEWARE_BOTTOM.encode()] + response[closeBody+1:]
+ 		result = response[:openBody] + [MIDDLEWARE_TOP.encode()] + response[openBody:closeBody+1] + [MIDDLEWARE_BOTTOM.encode()] + response[closeBody+1:]
  		return result
 
 
