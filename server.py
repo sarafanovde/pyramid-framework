@@ -12,8 +12,9 @@ def index_html(environ, start_response):
     status = '200 OK'
     response_headers = [("Content-Type", "text/html")]
     result = []
-    file = open('./index.html','r')
-    result = file.read()
+    file = open('./index.html','rb')
+    for x in file:
+    	result.append(x)
     start_response(status, response_headers)	
     return result
 @wsgiapp
@@ -21,9 +22,10 @@ def aboutme_html(environ, start_response):
     status = '200 OK'
     response_headers = [("Content-Type", "text/html")]
     result = []	
-    file = open('./about/aboutme.html','r')	
-    result = file.read()
-    start_response(status, response_headers)	
+    file = open('./about/aboutme.html','rb')	
+    for x in file:
+    	result.append(x)
+    start_response(status, response_headers)
     return result
 
 
@@ -36,18 +38,16 @@ class MyMiddleWare(object):
 
  	def __call__(self, environ, start_response):
  		#Вставляем TOP and BOTTOM
+	 	openBody = -1
+ 		closeBody = -1
  		response = self.app(environ, start_response)
- 		#print (response)
- 		if response.find('<body>') >-1:
- 				#отделяем заголовок от тела
- 				header,body = response.split('<body>')
- 				#отделяем тело документа от конца
- 				bodycontent,htmlend = body.split('</body>')
- 				#"склеиваем" новую страницу
- 				bodycontent = '<body>'+ MIDDLEWARE_TOP + bodycontent + MIDDLEWARE_BOTTOM+'</body>'
- 				return [header.encode() + bodycontent.encode() + htmlend.encode()]
- 		else:
- 			        return [MIDDLEWARE_TOP.encode() + response.encode()]
+ 		for x in response:
+ 			if "<body>" in x.decode():
+	 			openBody = response.index(x)
+ 			if "</body>" in x.decode():
+ 				closeBody = response.index(x)
+ 		 		result = response[:openBody] + [MIDDLEWARE_TOP.encode()] + response[openBody:closeBody+1] + [MIDDLEWARE_BOTTOM.encode()] + response[closeBody+1:]
+ 		return result
 
 
 
